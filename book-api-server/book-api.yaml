@@ -1,0 +1,116 @@
+openapi: 3.0.3
+info:
+  title: Book Management API
+  description: API quản lý sách cho thư viện
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local server
+
+paths:
+  /books:
+    get:
+      summary: Lấy danh sách tất cả sách
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+    post:
+      summary: Thêm sách mới
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookInput"
+      responses:
+        "201":
+          description: Đã thêm sách thành công
+
+  /books/{id}:
+    get:
+      summary: Lấy thông tin chi tiết của một sách
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        "404":
+          description: Không tìm thấy
+    put:
+      summary: Cập nhật thông tin sách
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookInput"
+      responses:
+        "200":
+          description: Cập nhật thành công
+    delete:
+      summary: Xóa sách
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Xóa thành công
+
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        title:
+          type: string
+          example: "Lập trình Java căn bản"
+        author:
+          type: string
+          example: "Nguyễn Văn A"
+        publisher:
+          type: string
+          example: "NXB Giáo dục"
+        year:
+          type: integer
+          example: 2023
+    BookInput:
+      type: object
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        publisher:
+          type: string
+        year:
+          type: integer
+      required:
+        - title
+        - author

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thư viện</title>
+</head>
+<body>
+    <h1>Danh sách sách</h1>
+    <a href="{{ url_for('add_book') }}">➕ Thêm sách</a>
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>ID</th><th>Tiêu đề</th><th>Tác giả</th><th>Trạng thái</th><th>Hành động</th>
+        </tr>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.id }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ "Có sẵn" if book.available else "Đang mượn" }}</td>
+            <td>
+                {% if book.available %}
+                    <a href="{{ url_for('borrow', book_id=book.id) }}">Mượn</a>
+                {% else %}
+                    <a href="{{ url_for('return_book', book_id=book.id) }}">Trả</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

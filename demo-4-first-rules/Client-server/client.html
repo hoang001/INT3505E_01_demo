@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>Client Demo</title></head>
+<body>
+  <h1>Danh sách sách</h1>
+  <ul id="book-list"></ul>
+  <script>
+    fetch('http://localhost:3000/api/books')
+      .then(res => res.json())
+      .then(data => {
+        const ul = document.getElementById('book-list');
+        data.forEach(book => {
+          const li = document.createElement('li');
+          li.textContent = book.title;
+          ul.appendChild(li);
+        });
+      });
+  </script>
+</body>
+</html>

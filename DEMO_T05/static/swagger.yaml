@@ -1,0 +1,73 @@
+openapi: "3.0.0"
+info:
+  title: Book Management API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local server
+
+paths:
+  /books:
+    get:
+      summary: Lấy danh sách sách với phân trang
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Trang hiện tại, mặc định 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Số bản ghi mỗi trang, mặc định 5
+      responses:
+        '200':
+          description: Thành công
+    post:
+      summary: Thêm sách mới
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                author:
+                  type: string
+                published_year:
+                  type: integer
+      responses:
+        '201':
+          description: Tạo thành công
+  /books/{id}:
+    get:
+      summary: Lấy chi tiết sách
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Thành công
+        '404':
+          description: Không tìm thấy
+    delete:
+      summary: Xóa sách
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Đã xóa
+        '404':
+          description: Không tìm thấy

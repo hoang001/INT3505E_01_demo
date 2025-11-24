@@ -1,0 +1,1462 @@
+openapi: 3.0.3
+info:
+  title: L'Artelier API Documentation
+  description: Development documentation
+  version: 1.0.0
+paths:
+  /api/:
+    get:
+      operationId: getApi
+      responses:
+        "200":
+          description: API information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "API is running"
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  format: email
+                  type: string
+                password:
+                  minLength: 6
+                  type: string
+              required:
+                - email
+                - password
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  format: email
+                  type: string
+                password:
+                  minLength: 6
+                  type: string
+              required:
+                - email
+                - password
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  format: email
+                  type: string
+                password:
+                  minLength: 6
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                required:
+                  - token
+        "401":
+          description: Response for status 401
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+      operationId: postApiAuthLogin
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Log out the current user
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                  - ok
+        "401":
+          description: Response for status 401
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+      operationId: postApiAuthLogout
+  /api/users/offset:
+    get:
+      tags:
+        - User Management
+      summary: User pagination offset/limit
+      parameters:
+        - name: offset
+          in: query
+          required: true
+          schema:
+            default: 0
+            minimum: 0
+            type: number
+        - name: limit
+          in: query
+          required: true
+          schema:
+            default: 10
+            minimum: 1
+            maximum: 1000
+            type: number
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                          type: integer
+                        email:
+                          type: string
+                        username:
+                          type: string
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        dob:
+                          anyOf:
+                            - type: string
+                            - type: "null"
+                        role:
+                          type: string
+                          enum:
+                            - admin
+                            - operator
+                            - user
+                        created_at:
+                          type: string
+                        updated_at:
+                          type: string
+                      required:
+                        - id
+                        - email
+                        - username
+                        - first_name
+                        - last_name
+                        - dob
+                        - role
+                        - created_at
+                        - updated_at
+                required:
+                  - users
+      operationId: getApiUsersOffset
+  /api/users/cursor:
+    get:
+      tags:
+        - User Management
+      summary: User pagination cursor-based
+      parameters:
+        - name: cursor
+          in: query
+          required: true
+          schema:
+            default: 0
+            minimum: 0
+            type: number
+        - name: limit
+          in: query
+          required: true
+          schema:
+            default: 10
+            minimum: 1
+            maximum: 1000
+            type: number
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                          type: integer
+                        email:
+                          type: string
+                        username:
+                          type: string
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        dob:
+                          anyOf:
+                            - type: string
+                            - type: "null"
+                        role:
+                          type: string
+                          enum:
+                            - admin
+                            - operator
+                            - user
+                        created_at:
+                          type: string
+                        updated_at:
+                          type: string
+                      required:
+                        - id
+                        - email
+                        - username
+                        - first_name
+                        - last_name
+                        - dob
+                        - role
+                        - created_at
+                        - updated_at
+                required:
+                  - users
+      operationId: getApiUsersCursor
+  /api/users/page:
+    get:
+      tags:
+        - User Management
+      summary: User pagination page-based
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            default: 1
+            minimum: 1
+            type: number
+        - name: per_page
+          in: query
+          required: true
+          schema:
+            default: 10
+            minimum: 1
+            maximum: 1000
+            type: number
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                          type: integer
+                        email:
+                          type: string
+                        username:
+                          type: string
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        dob:
+                          anyOf:
+                            - type: string
+                            - type: "null"
+                        role:
+                          type: string
+                          enum:
+                            - admin
+                            - operator
+                            - user
+                        created_at:
+                          type: string
+                        updated_at:
+                          type: string
+                      required:
+                        - id
+                        - email
+                        - username
+                        - first_name
+                        - last_name
+                        - dob
+                        - role
+                        - created_at
+                        - updated_at
+                required:
+                  - users
+      operationId: getApiUsersPage
+  /api/users/:
+    post:
+      tags:
+        - User Management
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  format: email
+                  type: string
+                username:
+                  minLength: 5
+                  maxLength: 30
+                  type: string
+                password:
+                  minLength: 6
+                  type: string
+                first_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                last_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                dob:
+                  type: string
+                  format: date
+                  nullable: true
+                  default: null
+              required:
+                - email
+                - username
+                - password
+                - first_name
+                - last_name
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  format: email
+                  type: string
+                username:
+                  minLength: 5
+                  maxLength: 30
+                  type: string
+                password:
+                  minLength: 6
+                  type: string
+                first_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                last_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                dob:
+                  type: string
+                  format: date
+                  nullable: true
+                  default: null
+              required:
+                - email
+                - username
+                - password
+                - first_name
+                - last_name
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  format: email
+                  type: string
+                username:
+                  minLength: 5
+                  maxLength: 30
+                  type: string
+                password:
+                  minLength: 6
+                  type: string
+                first_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                last_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                dob:
+                  type: string
+                  format: date
+                  nullable: true
+                  default: null
+              required:
+                - email
+                - username
+                - password
+                - first_name
+                - last_name
+      responses:
+        "201":
+          description: Response for status 201
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        type: integer
+                      email:
+                        type: string
+                      username:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      dob:
+                        anyOf:
+                          - type: string
+                          - type: "null"
+                      role:
+                        type: string
+                        enum:
+                          - admin
+                          - operator
+                          - user
+                      created_at:
+                        type: string
+                      updated_at:
+                        type: string
+                    required:
+                      - id
+                      - email
+                      - username
+                      - first_name
+                      - last_name
+                      - dob
+                      - role
+                      - created_at
+                      - updated_at
+                required:
+                  - user
+        "409":
+          description: Response for status 409
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+        "500":
+          description: Response for status 500
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+      operationId: postApiUsers
+    get:
+      tags:
+        - User Management
+      summary: Get all users (Admin Only)
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                          type: integer
+                        email:
+                          type: string
+                        username:
+                          type: string
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        dob:
+                          anyOf:
+                            - type: string
+                            - type: "null"
+                        role:
+                          type: string
+                          enum:
+                            - admin
+                            - operator
+                            - user
+                        created_at:
+                          type: string
+                        updated_at:
+                          type: string
+                      required:
+                        - id
+                        - email
+                        - username
+                        - first_name
+                        - last_name
+                        - dob
+                        - role
+                        - created_at
+                        - updated_at
+                required:
+                  - users
+        "403":
+          description: Response for status 403
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+      operationId: getApiUsers
+  /api/users/me:
+    get:
+      tags:
+        - User Management
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        type: integer
+                      email:
+                        type: string
+                      username:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      dob:
+                        anyOf:
+                          - type: string
+                          - type: "null"
+                      role:
+                        type: string
+                        enum:
+                          - admin
+                          - operator
+                          - user
+                      created_at:
+                        type: string
+                      updated_at:
+                        type: string
+                    required:
+                      - id
+                      - email
+                      - username
+                      - first_name
+                      - last_name
+                      - dob
+                      - role
+                      - created_at
+                      - updated_at
+                required:
+                  - user
+                additionalProperties: false
+        "401":
+          description: Response for status 401
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+        "404":
+          description: Response for status 404
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+      operationId: getApiUsersMe
+  /api/users/{id}:
+    get:
+      tags:
+        - User Management
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - format: numeric
+                default: 0
+                type: string
+              - type: number
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        type: integer
+                      email:
+                        type: string
+                      username:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      dob:
+                        anyOf:
+                          - type: string
+                          - type: "null"
+                      role:
+                        type: string
+                        enum:
+                          - admin
+                          - operator
+                          - user
+                      created_at:
+                        type: string
+                      updated_at:
+                        type: string
+                    required:
+                      - id
+                      - email
+                      - username
+                      - first_name
+                      - last_name
+                      - dob
+                      - role
+                      - created_at
+                      - updated_at
+                required:
+                  - user
+        "403":
+          description: Response for status 403
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+        "404":
+          description: Response for status 404
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+      operationId: getApiUsersById
+    patch:
+      tags:
+        - User Management
+      summary: Partially update a user account information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - format: numeric
+                default: 0
+                type: string
+              - type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  format: email
+                  type: string
+                username:
+                  minLength: 5
+                  maxLength: 30
+                  type: string
+                first_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                last_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                dob:
+                  type: string
+                  format: date
+                  nullable: true
+                  default: null
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  format: email
+                  type: string
+                username:
+                  minLength: 5
+                  maxLength: 30
+                  type: string
+                first_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                last_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                dob:
+                  type: string
+                  format: date
+                  nullable: true
+                  default: null
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  format: email
+                  type: string
+                username:
+                  minLength: 5
+                  maxLength: 30
+                  type: string
+                first_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                last_name:
+                  minLength: 1
+                  maxLength: 50
+                  type: string
+                dob:
+                  type: string
+                  format: date
+                  nullable: true
+                  default: null
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        type: integer
+                      email:
+                        type: string
+                      username:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      dob:
+                        anyOf:
+                          - type: string
+                          - type: "null"
+                      role:
+                        type: string
+                        enum:
+                          - admin
+                          - operator
+                          - user
+                      created_at:
+                        type: string
+                      updated_at:
+                        type: string
+                    required:
+                      - id
+                      - email
+                      - username
+                      - first_name
+                      - last_name
+                      - dob
+                      - role
+                      - created_at
+                      - updated_at
+                required:
+                  - user
+        "404":
+          description: Response for status 404
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+      operationId: patchApiUsersById
+    delete:
+      tags:
+        - User Management
+      summary: Delete a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - format: numeric
+                default: 0
+                type: string
+              - type: number
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "404":
+          description: Response for status 404
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+      operationId: deleteApiUsersById
+  /api/users/{id}/addresses:
+    post:
+      tags:
+        - User Management
+      summary: Add a new address for a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - format: numeric
+                default: 0
+                type: string
+              - type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  minLength: 5
+                  maxLength: 255
+                  type: string
+                phone:
+                  maxLength: 10
+                  format: ^[0-9]{10,11}$
+                  type: string
+                state:
+                  maxLength: 100
+                  type: string
+                postal_code:
+                  anyOf:
+                    - maxLength: 20
+                      type: string
+                    - type: "null"
+                country:
+                  maxLength: 100
+                  type: string
+                is_default:
+                  minimum: 0
+                  maximum: 1
+                  default: 0
+                  anyOf:
+                    - format: integer
+                      default: 0
+                      type: string
+                    - minimum: 0
+                      maximum: 1
+                      default: 0
+                      type: integer
+                created_at:
+                  type: string
+                updated_at:
+                  type: string
+              required:
+                - address
+                - phone
+                - state
+                - country
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                address:
+                  minLength: 5
+                  maxLength: 255
+                  type: string
+                phone:
+                  maxLength: 10
+                  format: ^[0-9]{10,11}$
+                  type: string
+                state:
+                  maxLength: 100
+                  type: string
+                postal_code:
+                  anyOf:
+                    - maxLength: 20
+                      type: string
+                    - type: "null"
+                country:
+                  maxLength: 100
+                  type: string
+                is_default:
+                  minimum: 0
+                  maximum: 1
+                  default: 0
+                  anyOf:
+                    - format: integer
+                      default: 0
+                      type: string
+                    - minimum: 0
+                      maximum: 1
+                      default: 0
+                      type: integer
+                created_at:
+                  type: string
+                updated_at:
+                  type: string
+              required:
+                - address
+                - phone
+                - state
+                - country
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                address:
+                  minLength: 5
+                  maxLength: 255
+                  type: string
+                phone:
+                  maxLength: 10
+                  format: ^[0-9]{10,11}$
+                  type: string
+                state:
+                  maxLength: 100
+                  type: string
+                postal_code:
+                  anyOf:
+                    - maxLength: 20
+                      type: string
+                    - type: "null"
+                country:
+                  maxLength: 100
+                  type: string
+                is_default:
+                  minimum: 0
+                  maximum: 1
+                  default: 0
+                  anyOf:
+                    - format: integer
+                      default: 0
+                      type: string
+                    - minimum: 0
+                      maximum: 1
+                      default: 0
+                      type: integer
+                created_at:
+                  type: string
+                updated_at:
+                  type: string
+              required:
+                - address
+                - phone
+                - state
+                - country
+      responses:
+        "201":
+          description: Response for status 201
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: object
+                    properties:
+                      id:
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        type: integer
+                      user_id:
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        type: integer
+                      address:
+                        type: string
+                      phone:
+                        type: string
+                      state:
+                        type: string
+                      postal_code:
+                        anyOf:
+                          - type: string
+                          - type: "null"
+                      country:
+                        type: string
+                      is_default:
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        type: integer
+                      created_at:
+                        type: string
+                      updated_at:
+                        type: string
+                    required:
+                      - id
+                      - user_id
+                      - address
+                      - phone
+                      - state
+                      - postal_code
+                      - country
+                      - is_default
+                      - created_at
+                      - updated_at
+                required:
+                  - address
+        "403":
+          description: Response for status 403
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+        "404":
+          description: Response for status 404
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+        "500":
+          description: Response for status 500
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+      operationId: postApiUsersByIdAddresses
+  /api/users/{id}/addresses/{address_id}:
+    patch:
+      tags:
+        - User Management
+      summary: Update an existing address for a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - format: numeric
+                default: 0
+                type: string
+              - type: number
+        - name: address_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - format: numeric
+                default: 0
+                type: string
+              - type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  minimum: -9007199254740991
+                  maximum: 9007199254740991
+                  type: integer
+                user_id:
+                  minimum: -9007199254740991
+                  maximum: 9007199254740991
+                  type: integer
+                address:
+                  minLength: 5
+                  maxLength: 255
+                  type: string
+                phone:
+                  maxLength: 10
+                  format: ^[0-9]{10,11}$
+                  type: string
+                state:
+                  maxLength: 100
+                  type: string
+                postal_code:
+                  anyOf:
+                    - maxLength: 20
+                      type: string
+                    - type: "null"
+                country:
+                  maxLength: 100
+                  type: string
+                is_default:
+                  minimum: 0
+                  maximum: 1
+                  default: 0
+                  anyOf:
+                    - format: integer
+                      default: 0
+                      type: string
+                    - minimum: 0
+                      maximum: 1
+                      default: 0
+                      type: integer
+                created_at:
+                  type: string
+                updated_at:
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  minimum: -9007199254740991
+                  maximum: 9007199254740991
+                  type: integer
+                user_id:
+                  minimum: -9007199254740991
+                  maximum: 9007199254740991
+                  type: integer
+                address:
+                  minLength: 5
+                  maxLength: 255
+                  type: string
+                phone:
+                  maxLength: 10
+                  format: ^[0-9]{10,11}$
+                  type: string
+                state:
+                  maxLength: 100
+                  type: string
+                postal_code:
+                  anyOf:
+                    - maxLength: 20
+                      type: string
+                    - type: "null"
+                country:
+                  maxLength: 100
+                  type: string
+                is_default:
+                  minimum: 0
+                  maximum: 1
+                  default: 0
+                  anyOf:
+                    - format: integer
+                      default: 0
+                      type: string
+                    - minimum: 0
+                      maximum: 1
+                      default: 0
+                      type: integer
+                created_at:
+                  type: string
+                updated_at:
+                  type: string
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id:
+                  minimum: -9007199254740991
+                  maximum: 9007199254740991
+                  type: integer
+                user_id:
+                  minimum: -9007199254740991
+                  maximum: 9007199254740991
+                  type: integer
+                address:
+                  minLength: 5
+                  maxLength: 255
+                  type: string
+                phone:
+                  maxLength: 10
+                  format: ^[0-9]{10,11}$
+                  type: string
+                state:
+                  maxLength: 100
+                  type: string
+                postal_code:
+                  anyOf:
+                    - maxLength: 20
+                      type: string
+                    - type: "null"
+                country:
+                  maxLength: 100
+                  type: string
+                is_default:
+                  minimum: 0
+                  maximum: 1
+                  default: 0
+                  anyOf:
+                    - format: integer
+                      default: 0
+                      type: string
+                    - minimum: 0
+                      maximum: 1
+                      default: 0
+                      type: integer
+                created_at:
+                  type: string
+                updated_at:
+                  type: string
+      responses:
+        "200":
+          description: Response for status 200
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: object
+                    properties:
+                      id:
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        type: integer
+                      user_id:
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        type: integer
+                      address:
+                        type: string
+                      phone:
+                        type: string
+                      state:
+                        type: string
+                      postal_code:
+                        anyOf:
+                          - type: string
+                          - type: "null"
+                      country:
+                        type: string
+                      is_default:
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        type: integer
+                      created_at:
+                        type: string
+                      updated_at:
+                        type: string
+                    required:
+                      - id
+                      - user_id
+                      - address
+                      - phone
+                      - state
+                      - postal_code
+                      - country
+                      - is_default
+                      - created_at
+                      - updated_at
+                required:
+                  - address
+        "403":
+          description: Response for status 403
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+        "404":
+          description: Response for status 404
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+        "500":
+          description: Response for status 500
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                additionalProperties: false
+      operationId: patchApiUsersByIdAddressesByAddress_id
+  /:
+    get:
+      summary: Health check endpoint
+      operationId: getIndex
+      responses:
+        "200":
+          description: Health check
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+components:
+  schemas: {}

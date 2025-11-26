@@ -1,12 +1,13 @@
 import os
 from typing import List
 
-from apiflask import APIFlask, Schema
+from apiflask import APIFlask, Schema, abort
 from bson import ObjectId
 from bson.errors import InvalidId
 from dotenv import load_dotenv
 from marshmallow import fields
 from mongoengine import Document, FloatField, StringField, connect
+from mongoengine.errors import ValidationError
 
 load_dotenv()
 
@@ -27,7 +28,6 @@ class Product(Document):
 app = APIFlask(__name__, title="Products API", version="1.0.0")
 
 
-# Marshmallow Schemas for API
 class ProductIn(Schema):
     name = fields.String(
         required=True, metadata={"description": "Product name", "example": "Laptop"}
@@ -79,7 +79,7 @@ def get_products():
 
 
 @app.post("/products")
-@app.input(ProductIn)
+@app.input(ProductIn, arg_name='data')
 @app.output(ProductOut, status_code=201)
 def create_product(data):
     product = Product(**data)
@@ -91,12 +91,11 @@ def create_product(data):
         "description": product.description or "",
     }
 
-
 @app.get("/products/<id>")
 @app.output(ProductOut)
 def get_product(id):
     if not ObjectId.is_valid(id):
-        return {"message": "Invalid product ID"}, 400
+        abort(400, message="Invalid product ID")
     try:
         product = Product.objects.get(id=id)
         return {
@@ -106,15 +105,15 @@ def get_product(id):
             "description": product.description or "",
         }
     except Product.DoesNotExist:
-        return {"message": "Product not found"}, 404
-    except InvalidId:
-        return {"message": "Invalid product ID"}, 400
+        abort(404, message="Product not found")
 
 
 @app.put("/products/<id>")
-@app.input(ProductIn)
+@app.input(ProductIn, arg_name='data')
 @app.output(ProductOut)
 def update_product(id, data):
+    if not ObjectId.is_valid(id):
+        abort(400, message="Invalid product ID")
     try:
         product = Product.objects.get(id=id)
         product.name = data["name"]
@@ -127,28 +126,24 @@ def update_product(id, data):
             "price": product.price,
             "description": product.description or "",
         }
-    except ValidationError:
-        return {"message": "Invalid product ID"}, 400
-    except ValidationError:
-        return {"message": "Invalid product ID"}, 400
     except Product.DoesNotExist:
-        return {"message": "Product not found"}, 404
-    except InvalidId:
-        return {"message": "Invalid product ID"}, 400
+        abort(404, message="Product not found")
+    except ValidationError as e:
+        abort(400, message=f"Validation Error: {e}")
 
 
 @app.delete("/products/<id>")
 @app.output(MessageSchema)
 def delete_product(id):
     if not ObjectId.is_valid(id):
-        return {"message": "Invalid product ID"}, 400
+        abort(400, message="Invalid product ID")
     try:
         product = Product.objects.get(id=id)
         product.delete()
         return {"message": "Product deleted"}
     except Product.DoesNotExist:
-        return {"message": "Product not found"}, 404
+        abort(404, message="Product not found")
 
 
 if __name__ == "__main__":
-    app.run(debug=False, host='127.0.0.1', port=5001)
+    app.run(debug=False, host='127.0.0.1', port=5000)
